@@ -3,6 +3,8 @@ from pydantic import BaseModel
 from typing import List, Union
 from fastembed import TextEmbedding
 import numpy as np
+import base64
+
 
 app = FastAPI(title="FastEmbed OpenAI-Compatible API")
 
@@ -13,7 +15,7 @@ model = TextEmbedding(model_name=DEFAULT_MODEL)
 class EmbeddingRequest(BaseModel):
     input: Union[str, List[str]]
     model: str = DEFAULT_MODEL  # Optional, but included for compatibility
-    encoding_format: str = "float"  # Optional, defaults to float
+    encoding_format: str = "float"  # Optional, defaults to float (can be "float" or "base64")
 
 class EmbeddingResponse(BaseModel):
     object: str = "list"
@@ -34,7 +36,7 @@ async def create_embedding(request: EmbeddingRequest):
         data = [
             {
                 "object": "embedding",
-                "embedding": emb.tolist() if request.encoding_format == "float" else emb.astype(np.float32).tobytes(),
+                "embedding": emb.tolist() if request.encoding_format == "float" else base64.b64encode(emb.astype(np.float32).tobytes()).decode('ascii'),
                 "index": i
             }
             for i, emb in enumerate(embeddings)
@@ -44,6 +46,7 @@ async def create_embedding(request: EmbeddingRequest):
             "prompt_tokens": sum(len(text.split()) for text in texts),  # Approximate
             "total_tokens": sum(len(text.split()) for text in texts)
         }
+        
         
         return EmbeddingResponse(data=data, model=request.model, usage=usage)
     
