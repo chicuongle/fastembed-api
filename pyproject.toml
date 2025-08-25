@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "fastembed-api"
+version = "0.1.0"
+description = "Fast Embed API"
+authors = ["Chi Cuong Le <chicuongle@protonmail.com>"]
+readme = "README.md"
+license = "MIT"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+fastembed = "*"   # example version
+fastapi = "*"    # example version
+uvicorn = "*"    # example version
+
+[build-system]
+requires = ["poetry-core>=1.5.0"]
+build-backend = "poetry.core.masonry.api"
