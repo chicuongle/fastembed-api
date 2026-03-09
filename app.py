@@ -4,12 +4,13 @@ from typing import List, Union
 from fastembed import TextEmbedding
 import numpy as np
 import base64
+import os
 
 
 app = FastAPI(title="FastEmbed OpenAI-Compatible API")
 
 # Load a default lightweight model (change as needed)
-DEFAULT_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+DEFAULT_MODEL = os.getenv('MODEL_NAME', 'sentence-transformers/all-MiniLM-L6-v2')
 model = TextEmbedding(model_name=DEFAULT_MODEL)
 
 class EmbeddingRequest(BaseModel):

@@ -1,5 +1,8 @@
 FROM python:3.10-slim
 
+ARG MODEL_NAME=sentence-transformers/all-MiniLM-L6-v2
+ENV MODEL_NAME=$MODEL_NAME
+
 WORKDIR /app
 
 COPY pyproject.toml poetry.lock* ./
