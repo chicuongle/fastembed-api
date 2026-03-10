@@ -9,10 +9,18 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
-fastembed = "*"   # example version
-fastapi = "*"    # example version
-uvicorn = "*"    # example version
-sentence-transformers = "*"    # for fallback embedding models
+fastembed = "*"
+fastapi = "*"
+uvicorn = "*"
+sentence-transformers = "*"
+# Remove torch dependency to let fastembed/sentence-transformers resolve it, 
+# or use a more standard source if absolutely needed.
+# torch = { version = "*", source = "torch-cpu" } 
+
+# [[tool.poetry.source]]
+# name = "torch-cpu"
+# url = "https://download.pytorch.org/whl/cpu"
+# priority = "explicit"
 
 [build-system]
 requires = ["poetry-core>=1.5.0"]

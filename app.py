@@ -13,10 +13,15 @@ app = FastAPI(title="FastEmbed OpenAI-Compatible API")
 # Load a default lightweight model (change as needed)
 DEFAULT_MODEL = os.getenv('MODEL_NAME', 'sentence-transformers/all-MiniLM-L6-v2')
 supported_models = TextEmbedding.list_supported_models()
+
+# Initialize model
 if DEFAULT_MODEL in supported_models:
+    print(f"Loading FastEmbed model: {DEFAULT_MODEL}")
     model = TextEmbedding(model_name=DEFAULT_MODEL)
 else:
-    model = SentenceTransformer(DEFAULT_MODEL)
+    print(f"Loading SentenceTransformer model (CPU): {DEFAULT_MODEL}")
+    # Force CPU device for sentence-transformers to avoid CUDA lookups if torch-cpu is installed
+    model = SentenceTransformer(DEFAULT_MODEL, device='cpu')
 
 class EmbeddingRequest(BaseModel):
     input: Union[str, List[str]]
@@ -36,6 +41,7 @@ async def create_embedding(request: EmbeddingRequest):
         texts = [request.input] if isinstance(request.input, str) else request.input
 
         # Generate embeddings
+        # FastEmbed handles both string and list[str] inputs
         if isinstance(model, TextEmbedding):
             embeddings = list(model.embed(texts))
         else:
