@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Union
 from fastembed import TextEmbedding
+from sentence_transformers import SentenceTransformer
 import numpy as np
 import base64
 import os
@@ -11,7 +12,11 @@ app = FastAPI(title="FastEmbed OpenAI-Compatible API")
 
 # Load a default lightweight model (change as needed)
 DEFAULT_MODEL = os.getenv('MODEL_NAME', 'sentence-transformers/all-MiniLM-L6-v2')
-model = TextEmbedding(model_name=DEFAULT_MODEL)
+supported_models = TextEmbedding.list_supported_models()
+if DEFAULT_MODEL in supported_models:
+    model = TextEmbedding(model_name=DEFAULT_MODEL)
+else:
+    model = SentenceTransformer(DEFAULT_MODEL)
 
 class EmbeddingRequest(BaseModel):
     input: Union[str, List[str]]
@@ -29,9 +34,12 @@ async def create_embedding(request: EmbeddingRequest):
     try:
         # Normalize input to list
         texts = [request.input] if isinstance(request.input, str) else request.input
-        
+
         # Generate embeddings
-        embeddings = list(model.embed(texts))
+        if isinstance(model, TextEmbedding):
+            embeddings = list(model.embed(texts))
+        else:
+            embeddings = model.encode(texts)
         
         # Format response to match OpenAI
         data = [

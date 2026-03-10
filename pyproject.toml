@@ -12,6 +12,7 @@ python = ">=3.10,<4.0"
 fastembed = "*"   # example version
 fastapi = "*"    # example version
 uvicorn = "*"    # example version
+sentence-transformers = "*"    # for fallback embedding models
 
 [build-system]
 requires = ["poetry-core>=1.5.0"]
